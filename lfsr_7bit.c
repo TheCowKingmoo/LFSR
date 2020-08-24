@@ -111,10 +111,12 @@ int main() {
         // Part 2 - XOR with lfsr state
         current = current^lfsr;
 
-        // Part 3 - use reduction XOR to get parity bit for 8th
-        current = addParityBit(current); // set parity bit --> PART 6
+        current = current + ASCIISPACE;
 
-        resultArray[i] = current;     // set result
+        // Part 3 - use reduction XOR to get parity bit for 8th
+        //current = addParityBit(current); // set parity bit --> PART 6
+
+        resultArray[i] = current;  // set result
 
         // doing this to calc the next state of lfsr
         lfsr = runLFSR(lfsr);  // run the LFSR --> Part 3
