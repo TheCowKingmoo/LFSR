@@ -2,7 +2,15 @@
  *  LFSR using a TAP lots of terrible hard coding
  *  this was used to make sure I knew what I was doing for 
  *  the ISA design for a RISC processor that I need to make. 
+ * 
+ * 
+ * 
+ * 
+ * 
+ * 8-bit values comprising bit[7] = ^bit[6:0], and bit[6:0] = (original data - 0x20)^LFSR(i).
 */
+
+
 #include<stdio.h>
 #include <stdbool.h>
 
@@ -62,6 +70,7 @@ char addParityBit(char current) {
     temp = temp | parityBit;
     temp = temp << 7;
 
+    //printf("parity = "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(temp));
 
     current = current & msb_mask;  // 0's out the front most bit
     current = current | temp;  // sets the front most bit to result of parity
@@ -69,8 +78,6 @@ char addParityBit(char current) {
     return current;
 
 }
-
-
 
 int main() {
 
@@ -85,7 +92,9 @@ int main() {
     char lfsr = ASCIISPACE;
 
     for (unsigned int i = 0; i < sizeof(inputMsg); i++) {
+
         char current = inputMsg[i];  // easier to read
+
         printf("\n");
         printf("%d. ", i);
         printf("Start with |%c| ", current);
@@ -93,17 +102,16 @@ int main() {
         printf("with binary value of "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(current-32));
         printf(" with LFSR = "BYTE_TO_BINARY_PATTERN, BYTE_TO_BINARY(lfsr));
 
+        // result should be ^bit[6:0], and bit[6:0] 
+        // where bit[6:0] = (original data - 0x20)^LFSR(i).
+
+        // PART 1 - og data - 0x20 - Subtract 32 from character
         current = current - ASCIISPACE;
 
-        // write up says to do this but idk why
-        // this is left out of the lfsr method as that method will generate the exact
-        //  output that his lecture example has
-        lfsr = lfsr^ASCIISPACE;
-        lfsr = lfsr - ASCIISPACE;
-
+        // Part 2 - XOR with lfsr state
         current = current^lfsr;
-        current = current-ASCIISPACE;
 
+        // Part 3 - use reduction XOR to get parity bit for 8th
         current = addParityBit(current); // set parity bit --> PART 6
 
         resultArray[i] = current;     // set result
